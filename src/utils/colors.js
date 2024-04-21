@@ -13,7 +13,7 @@ export const Colors = {
     darkGray: "#333333",          // Dark gray - Dark color for backgrounds with light content
     Gray: "#666666",              // Medium gray - Neutral color between dark and light grays
     lightGray: "#D3D3D3",         // Light gray - Light color for backgrounds with dark content
-    veryLightGrey: "#F0F0F0",      // Very light grey color
+    veryLightGrey: "#F8F8F8",      // Very light grey color
     tomato: "#ff6347",            // Tomato - Color for indicating errors or warnings
     limeGreen: "#32cd32",         // Lime green - Color for indicating success or positive actions
     orange: "#ffa500",            // Orange - Color for indicating warnings or cautionary messages

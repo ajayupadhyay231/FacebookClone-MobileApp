@@ -15,7 +15,7 @@ import VectorIcon from '../../utils/VectorIcon';
 const Tab = createMaterialTopTabNavigator();
 
 
-const HomeScreen = () => {
+const MainScreen = () => {
 
     const tabScreens = [
         {
@@ -121,7 +121,7 @@ const HomeScreen = () => {
     )
 }
 
-export default HomeScreen
+export default MainScreen
 
 const styles = StyleSheet.create({
     main_Container: {
