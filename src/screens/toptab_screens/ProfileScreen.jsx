@@ -1,11 +1,29 @@
-import { StyleSheet, Text, View,TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View,TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { Colors } from '../../utils/Colors'
+import auth from '@react-native-firebase/auth';
+
+
 
 const Profile = ({navigation}) => {
 
-    const handleLogoutPressed = () =>{
-        navigation.navigate("LoginScreen")
+
+// this will make the authentication state object to null in the firrbase and as soon as this 
+// happen the authentication state listners on root app componenet will get triggered and 
+// call the call back function with null user and based on this the user  will be taken to
+// main screen or login screen.... 
+
+// menaas the authentication navigation is maintained by that listener on app component 
+// whihc is listing to the firebase state whihc is getting changed on login logout etc...
+
+    const handleLogoutPressed = async() =>{
+      try{
+        const result =  await auth().signOut();
+        Alert.alert("signed out successfully")
+      }catch(err){
+        Alert.alert("Something went wrong")
+        console.log("Error in  singout, err:", err)
+      }
     }
   return (
     <View style={styles.main_container}>

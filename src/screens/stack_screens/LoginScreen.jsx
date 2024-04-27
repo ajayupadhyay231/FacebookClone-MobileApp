@@ -1,7 +1,8 @@
-import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native'
 import React, { useState } from 'react'
 import VectorIcon from '../../utils/VectorIcon';
 import { Colors } from '../../utils/Colors';
+import auth from '@react-native-firebase/auth';
 
 
 // task in whihc faced issue
@@ -28,15 +29,27 @@ import { Colors } from '../../utils/Colors';
 
 const LoginScreen = ({ navigation }) => {
 
-  const [mobileNumber, setMobileNumber] = useState("")
+  const [emailMobileNumber, setEmailMobileNumber] = useState("")
   const [password, setPassword] = useState("")
 
   const handleCreateNewAccountClick = () =>{
     navigation.navigate("RegisterScreen")
   }
 
-  const handleLoginPressed = () =>{
-    navigation.navigate("MainScreen")
+  const handleLoginPressed = async() =>{
+
+    try{
+      if(!emailMobileNumber.trim() || !password.trim() ){
+        Alert.alert("Please fill all fields");
+        return
+      }
+      const result = await auth().signInWithEmailAndPassword(emailMobileNumber, password);
+      console.log("login result", result);
+      // navigation.navigate("MainScreen")
+    }catch(error){
+      console.log("error in handleLoginPressed err:", error)
+    }
+
   }
 
   return (
@@ -45,7 +58,7 @@ const LoginScreen = ({ navigation }) => {
 // use keyborad avoiding view to achive the desired result that active input not get hide by 
 // keyboard or goes above the height of screen...
 
-    <ScrollView style={styles.main_view} >
+    <View style={styles.main_view} >
       {/*  contentContainerStyle={{flex:1}} 
       contentContainerStyle prop with flex: 1, it ensures that the content inside the scroll view expands to fill the entire scrollable area, 
       but not using becasuse its causing the whole content move way tio above
@@ -55,7 +68,7 @@ const LoginScreen = ({ navigation }) => {
       {/* <VectorIcon name="arrow-left" type={"FontAwesome5"} size={20} color={Colors.black} /> */}
       <View style={styles.top_div} >
         <VectorIcon  name="facebook" size={55} color={Colors.blue} style={styles.faceboook_icon} />
-        <TextInput style={styles.textInputs} placeholder='Mobile number or email' value={mobileNumber} onChangeText={(text)=>{setMobileNumber(text)}}></TextInput>
+        <TextInput style={styles.textInputs} placeholder='Mobile number or email' value={emailMobileNumber} onChangeText={(text)=>{setEmailMobileNumber(text)}}></TextInput>
         <TextInput style={styles.textInputs} placeholder='Password' value={password} onChangeText={(text)=>{setPassword(text)}}></TextInput>
         <TouchableOpacity style={styles.login_button} onPress={handleLoginPressed}><Text style={styles.login_button_text}>Log in</Text></TouchableOpacity>
         <Text style={styles.forgot_password_text}>Forgot Password?</Text>
@@ -64,7 +77,7 @@ const LoginScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.create_new_account}><Text style={styles.create_new_account_text} onPress={handleCreateNewAccountClick}>Create new account</Text></TouchableOpacity>
         <VectorIcon name="meta" size={20} color= {Colors.darkGray} type={"FontAwesome6"} />
       </View>
-    </ScrollView>
+    </View>
   )
 }
 
@@ -82,20 +95,23 @@ const styles = StyleSheet.create({
     // backgroundColor:"orange"
   },
   top_div: { 
-    flex: 3, // don't know why but its not wokring properly insde scroll voew main div..
+    // flex: 3, // don't know why but its not wokring properly insde scroll voew main div..
+    display:"flex",
     // backgroundColor: "green", 
     width: "100%",
     justifyContent:"flex-end",
     alignItems:"center",
-    paddingTop:"50%",
-    paddingBottom:"10%"
+    paddingTop:"30%",
+    // paddingBottom:"10%"
   },
   bottom_div: {
-    flex: 1, 
+    // flex: 1, 
     // backgroundColor: "red", 
     width: "100%",
     alignItems:"center",
-    justifyContent:"flex-start"
+    justifyContent:"flex-start",
+    paddingTop:"10%"
+    // marginEnd:40
   },
   faceboook_icon: {
     marginBottom: "20%",

@@ -1,12 +1,14 @@
-import { ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView } from 'react-native'
+import { ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Colors } from '../../utils/Colors'
 import VectorIcon from '../../utils/VectorIcon'
+import auth from '@react-native-firebase/auth';
+
 
 const RegisterScreen = ({ navigation }) => {
 
   const [fullName, setFullName] = useState("")
-  const [mobileNumber, setMobileNumber] = useState("")
+  const [mobileEmail, setMobileEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
@@ -14,13 +16,40 @@ const RegisterScreen = ({ navigation }) => {
     navigation.navigate("LoginScreen")  
   }
 
-  const handleCreateAccountClicked = () =>{
-
+  const handleCreateAccountClicked = async () => {
+    try {
+      if (!fullName.trim() || !mobileEmail.trim() || !password.trim() || !confirmPassword.trim()) {
+        Alert.alert("Please fill all fields");
+        return;
+      }
+      if (password !== confirmPassword) {
+        Alert.alert("Password and confirm password are different");
+        return;
+      }
+      const result = await auth().createUserWithEmailAndPassword(mobileEmail, password);
+      console.log("Authentication result", result);
+      // navigation.navigate("LoginScreen")
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        Alert.alert('Email already in use', 'Please use a different email address or try logging in.');
+        console.log("Error in handleCreateAccountClicked: Email already in use", error);
+      } else if (error.code === 'auth/invalid-email') {
+        Alert.alert('Invalid email', 'Please provide a valid email address.');
+        console.log("Error in handleCreateAccountClicked: Invalid email", error);
+      } else if (error.code === 'auth/weak-password') {
+        Alert.alert('Weak password', 'Please use a stronger password with at least 6 characters.');
+        console.log("Error in handleCreateAccountClicked: Weak password", error);
+      } else {
+        Alert.alert('Something went wrong', 'Please try again later.');
+        console.log("Error in handleCreateAccountClicked:", error);
+      }
+    }
   }
+  
   
   return (
     //  <KeyboardAvoidingView style={styles.container} behavior={'padding'}>
-      <ScrollView style={styles.main_view} >
+      <View style={styles.main_view} >
         {/* contentContainerStyle={{flex:1}}  not using thsi property of container
         which make all its child take up full width becaause its pushing 
         text filed way to above and not giveibg desired results*/} 
@@ -28,7 +57,7 @@ const RegisterScreen = ({ navigation }) => {
         <View style={styles.top_div} >
           <VectorIcon name="facebook" size={55} color={Colors.blue} style={styles.faceboook_icon} />
           <TextInput style={styles.textInputs} placeholder='Full name' value={fullName} onChangeText={(text) => { setFullName(text) }} />
-          <TextInput style={styles.textInputs} placeholder='Mobile number or email' value={mobileNumber} onChangeText={(text) => { setMobileNumber(text) }} />
+          <TextInput style={styles.textInputs} placeholder='Mobile number or email' value={mobileEmail} onChangeText={(text) => { setMobileEmail(text) }} />
           <TextInput style={styles.textInputs} placeholder='Password' value={password} onChangeText={(text) => { setPassword(text) }} />
           <TextInput style={styles.textInputs} placeholder='Confirm Password' value={confirmPassword} onChangeText={(text) => { setConfirmPassword(text) }} />
           <TouchableOpacity style={styles.login_button} onPress={handleCreateAccountClicked}><Text style={styles.login_button_text}>Create Account</Text></TouchableOpacity>
@@ -37,7 +66,7 @@ const RegisterScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.create_new_account}><Text style={styles.create_new_account_text} onPress={handleAlreadyHaveAcountClicked}>Already have an account ?</Text></TouchableOpacity>
           <VectorIcon name="meta" size={20} color={Colors.darkGray} type={"FontAwesome6"} />
         </View>
-      </ScrollView>
+      </View>
     //  </KeyboardAvoidingView> 
   )
 }
@@ -48,6 +77,7 @@ const styles = StyleSheet.create({
 
   main_view: {
     flex: 1,
+    display:"flex",
     flexDirection: 'column',
     padding:20,
     // justifyContent: 'center',
@@ -56,22 +86,23 @@ const styles = StyleSheet.create({
     // backgroundColor:"orange"
   },
   top_div: { 
-    flex: 3, // don't know why but its not wokring properly insde scroll voew main div..
+    // flex: 3, // don't know why but its not wokring properly insde scroll voew main div..
     // backgroundColor: "green", 
     width: "100%",
     justifyContent:"flex-end",
     alignItems:"center",
-    // paddingTop:"50%",
-    marginTop:"25%",
-    marginBottom:"15%"
+    paddingTop:"15%",
+    // marginTop:"25%",
+    // marginBottom:"15%"
   },
   bottom_div: {
-    flex: 1, 
+    // flex: 1, 
     // backgroundColor: "red", 
     width: "100%",
     alignItems:"center",
     justifyContent:"flex-start",
-    marginTop:"10%"
+    paddingTop:"10%"
+    // marginTop:"10%"
   },
   faceboook_icon: {
     marginBottom: "15%",
